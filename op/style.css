@@ -1,0 +1,156 @@
+:root {
+    --bg-base: #060608;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.08);
+    --primary: #9d6fff; /* Roxo vibrante */
+    --secondary: #38bdf8; /* Cyan vibrante */
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --code-bg: #111113;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    padding: 4rem 2rem;
+}
+
+/* =========================================
+   1. MOVIMENTO DO FUNDO: Gradiente Líquido
+   ========================================= */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    /* Gradiente Conic que flui (não radial) */
+    background: conic-gradient(from 180deg at 50% 50%, 
+                #1e1b4b 0deg, 
+                var(--bg-base) 90deg, 
+                #312e81 180deg, 
+                var(--bg-base) 270deg, 
+                #1e1b4b 360deg);
+    filter: blur(100px); /* Suaviza o gradiente */
+    opacity: 0.7;
+    /* Animação que gira o gradiente */
+    animation: backgroundFlow 30s linear infinite;
+}
+
+@keyframes backgroundFlow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.container { max-width: 1280px; margin: 0 auto; }
+
+.hero { text-align: center; margin-bottom: 5rem; }
+h1 { font-size: clamp(3rem, 5vw, 4.5rem); font-weight: 800; letter-spacing: -0.05em; margin-bottom: 1rem; }
+.text-gradient { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.hero p { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
+
+/* =========================================
+   2. MOVIMENTO DOS CARDS: Entrada em Cascata
+   ========================================= */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    /* Necessário para o efeito 3D nos filhos */
+    perspective: 1000px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* Prepara o card para rotação 3D suave */
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+    
+    /* Animação de entrada (fade up) */
+    opacity: 0;
+    animation: fadeUp 0.6s forwards ease-out;
+}
+
+/* Criamos atrasos (stagger) para os primeiros 6 cards */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+.card:nth-child(6) { animation-delay: 0.6s; }
+
+/* =========================================
+   3. MICRO-INTERAÇÃO: Efeito 3D Tilt no Hover
+   ========================================= */
+/*
+   AVISO SÊNIOR: Para um efeito *verdadeiramente* sênior
+   que segue o mouse com precisão, precisaríamos de 
+   um toque de JavaScript (mousemove). O CSS puro
+   tem limitações para rotações complexas.
+   
+   Abaixo, simulamos a melhor versão CSS puro:
+   O card inclina para trás e para cima quando o mouse entra.
+*/
+.card:hover {
+    background: var(--surface-hover);
+    border-color: rgba(192, 132, 252, 0.3); /* Destaque sutil */
+    
+    /* Rotação 3D sutil (CSS puro) */
+    transform: rotateX(5deg) rotateY(5deg) translateY(-5px);
+    
+    /* Sombra profunda para destacar a distância */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Efeito 'Pop' nos elementos internos (Inner 3D) */
+.card-header, .card-desc, .code-block {
+    transform: translateZ(20px); /* Faz os elementos flutuarem dentro do card */
+    transition: transform 0.3s ease;
+}
+
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.card-title { font-size: 1.4rem; font-weight: 500; }
+
+.operator-symbol {
+    font-family: 'Fira Code', monospace;
+    color: var(--primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.card-desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+.code-block {
+    background: var(--code-bg);
+    padding: 1.2rem;
+    border-radius: 12px;
+    font-family: 'Fira Code', monospace;
+    color: #a5b4fc;
+}
+
+/* Animações Keyframes */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) rotateX(10deg); /* Começa mais baixo e inclinado */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+    }
+}
